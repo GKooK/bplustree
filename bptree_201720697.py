@@ -55,7 +55,7 @@ class B_PLUS_TREE:
         return None
         pass
 
-    def insert(self, k):        
+    def insert(self, k):
         if(self.root==None):#최초로 값 삽입할 때
             n = Node()
             n.keys.append(k)
@@ -147,6 +147,23 @@ class B_PLUS_TREE:
         pass
         
     def find_range(self, k_from, k_to):
+        pathes = []
+        target_node = self.find(k_from)
+        break_state=False
+        while(1):
+            if(target_node.nextNode == None):
+                break
+            for i in target_node.keys:
+                if(i>=k_from and i<=k_to):
+                    pathes.append(i)
+                    if(i == k_to):
+                        break_state = True
+                        break
+            if(break_state):
+                break
+            #print(target_node.keys[-1],k_to)
+            target_node = target_node.nextNode
+        print(pathes)
         pass
         
     def find(self, k):
@@ -174,7 +191,12 @@ class B_PLUS_TREE:
                             pathes.append(start.keys)
                             start = start.subTrees[i+1]
                             break
-            print(pathes)
+            if((k not in return_val.keys)):
+                return_val = None
+            if(return_val == None):
+                print('NONE')
+            else:
+                print(*pathes,sep='-')
             return return_val
         return None
         pass
