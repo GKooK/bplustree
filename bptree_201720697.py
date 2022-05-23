@@ -123,11 +123,21 @@ class B_PLUS_TREE:
             else:#찾은 부분이 꽉 차있지 않다면 값들을 추가한다.
                 insert_place.keys.append(k)
                 insert_place.values.append(k)
-
+                insert_place.keys.sort()
+                insert_place.values.sort()
         pass
     
     def delete(self, k):
-
+        delete_place = self.find_node(k)
+        delete_place.keys.remove(k)
+        delete_place.values.remove(k)
+        #삭제후 절반이상 차있다면 종료한다. 절반 이하라면
+        #삭제 후 절반 이하라면
+        if(len(delete_place.keys) <= (self.order)//2):
+            del_node_index = delete_place.parent.subTrees.index(delete_place)
+            if((0<del_node_index) and (del_node_index<len(delete_place.parent.subTrees)-1)):
+                #양옆에 존재하는 경우 양옆을 살펴봐서 절반 이하인 친구를 찾는다.
+                a=1
         pass
     
     def print_root(self):
