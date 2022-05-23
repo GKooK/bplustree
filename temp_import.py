@@ -172,7 +172,7 @@ class B_PLUS_TREE:
                         delete_place.subTrees[del_node_index+1].nextNode = delete_place.nextNode
                 elif(del_node_index == 0):
                     #오른쪽 노드껏들로만 처리
-                    a=1
+                    a=1 
                 elif(del_node_index == len(delete_place.parent.subTrees)-1):
                     #왼쪽 노드껏들로만 처리
                     a=1
