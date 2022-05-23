@@ -1,6 +1,8 @@
 from logging import root
 import sys
 
+from requests import delete
+
 
 class Node:
     def __init__(self):
@@ -130,15 +132,50 @@ class B_PLUS_TREE:
     def delete(self, k):
         #return
         delete_place = self.find_node(k)
-        delete_place.keys.remove(k)
         delete_place.values.remove(k)
+        delete_place.keys.remove(k)
+        renew_place = delete_place.parent
+        while(1):
+            if(renew_place==None):
+                break
+            if(k in renew_place.keys):#삭제한 요소가 부모 노드에 존재한다면 부모 노드에 최신화 시켜줘야댐
+                #place = renew_place.keys.index(k)
+                #renew_place.keys[k] = renew_place.subTrees[place+1]
+                for i in range(len(renew_place.subTrees)):
+                    renew_place.keys[i] = renew_place.subTrees[i][0]
+            renew_place = renew_place.parent
         #삭제후 절반이상 차있다면 종료한다. 절반 이하라면
         #삭제 후 절반 이하라면
-        if(len(delete_place.keys) <= (self.order)//2):
-            del_node_index = delete_place.parent.subTrees.index(delete_place)
-            if((0<del_node_index) and (del_node_index<len(delete_place.parent.subTrees)-1)):
-                #양옆에 존재하는 경우 양옆을 살펴봐서 절반 이하인 친구를 찾는다.
-                a=1
+        #근데 그냥 삭제만 해준 경우 업데이트를 해주긴 해야되는데 이건 어찌할까....그냥
+        if(self.root != delete_place):
+            if(len(delete_place.keys) < (self.order)//2):#절반 이하라고 해서 일단 <=사용해야되는데 ppt엔 미만일때 발동
+                del_node_index = delete_place.parent.subTrees.index(delete_place)
+                if((0<del_node_index) and (del_node_index<len(delete_place.parent.subTrees)-1)):
+                    #양옆에 존재하는 경우 양옆을 살펴봐서 절반 이하인 친구를 찾는다.
+                    #일단 왼쪽 노드를 먼저 보고 오른쪽 노드를 보자
+                    if(len(delete_place.subTrees[del_node_index-1]) > (self.order-1)//2):#절반 초과일 경우
+                        #재분배하고 엔트리를 빌려온다
+                        a=1
+                    elif(len(delete_place.subTrees[del_node_index-1]) <= (self.order-1)//2):
+                        #정확히 절반일 경우, 삭제한거랑 이걸 병합한다.
+                        delete_place.subTrees[del_node_index-1].keys = delete_place.subTrees[del_node_index-1].keys + delete_place.keys
+                        if(delete_place.isLeaf == True):
+                            delete_place.subTrees[del_node_index-1].values = delete_place.subTrees[del_node_index-1].values + delete_place.values
+                        delete_place.subTrees[del_node_index-1].nextNode = delete_place.nextNode
+                    elif(len(delete_place.subTrees[del_node_index+1]) > (self.order-1)//2):#절반 초과일 경우
+                        a=1
+                    elif(len(delete_place.subTrees[del_node_index+1]) <= (self.order-1)//2):
+                        #정확히 절반일 경우, 삭제한거랑 이걸 병합한다.
+                        delete_place.subTrees[del_node_index+1].keys = delete_place.subTrees[del_node_index+1].keys + delete_place.keys
+                        if(delete_place.isLeaf == True):
+                            delete_place.subTrees[del_node_index+1].values = delete_place.subTrees[del_node_index+1].values + delete_place.values
+                        delete_place.subTrees[del_node_index+1].nextNode = delete_place.nextNode
+                elif(del_node_index == 0):
+                    #오른쪽 노드껏들로만 처리
+                    a=1
+                elif(del_node_index == len(delete_place.parent.subTrees)-1):
+                    #왼쪽 노드껏들로만 처리
+                    a=1
         pass
     
     def print_root(self):

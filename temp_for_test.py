@@ -10,6 +10,8 @@ from temp_import import B_PLUS_TREE as btree
 
 temp = btree(5)
 temp.insert(5)
+temp.insert(3)
+temp.delete(3)
 temp.insert(7)
 temp.insert(8)
 temp.insert(9)
