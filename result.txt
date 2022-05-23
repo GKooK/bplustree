@@ -1,0 +1,29 @@
+INIT 3
+INSERT 1
+INSERT 2
+INSERT 3
+ROOT
+[3]
+FIND 2
+[3]-[1, 2]
+PRINT
+[[[3]], [[1, 2], [3]]]
+SEP
+-------------------------
+INIT 5
+INSERT 3
+DELETE 3
+INSERT 5
+INSERT 7
+INSERT 8
+INSERT 9
+INSERT 3
+INSERT 11
+ROOT
+[8]
+PRINT
+[[[8]], [[3, 5, 7, 3], [8, 9, 11]]]
+RANGE 5 8
+[8]-[3, 5, 7, 3]
+[5, 7]
+EXIT

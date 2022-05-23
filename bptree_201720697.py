@@ -115,7 +115,6 @@ class B_PLUS_TREE:
                         insert_place.parent = new_root
                         n2.parent = new_root
                         self.root = new_root
-
                     #작업이 끝났다면 부모 노드로 올라가서 검증하자.
                     insert_place = insert_place.parent
                     if(insert_place == None):
@@ -140,10 +139,23 @@ class B_PLUS_TREE:
         pass
     
     def print_tree(self):
+        print_result = []
         queue = []
-        queue.append(self.root)
+        queue.append(self.root)#맨 처음 노드 추가
         while(len(queue)!=0):
-            a=1
+            result_append_temp_list = []
+            temp = []#지금들어있는거 다 뺴자
+            while(len(queue)!=0):
+                temp.append(queue[0])
+                del queue[0]
+            for i in temp:
+                result_append_temp_list.append(str(i.keys))
+            for i in temp:#큐에서 뺀 노드들
+                for j in i.subTrees:#그 노드들의 서브 트리를 넣어주자.
+                    queue.append(j)
+            #print(','.join(result_append_temp_list))
+            print_result.append(','.join(result_append_temp_list))
+        print('-'.join(print_result))
         pass
         
     def find_range(self, k_from, k_to):
