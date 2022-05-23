@@ -173,8 +173,6 @@ class B_PLUS_TREE:
         target_node = self.find(k_from)
         break_state=False
         while(1):
-            if(target_node.nextNode == None):
-                break
             for i in target_node.keys:
                 if(i>=k_from and i<=k_to):
                     pathes.append(i)
@@ -185,6 +183,8 @@ class B_PLUS_TREE:
                 break
             #print(target_node.keys[-1],k_to)
             target_node = target_node.nextNode
+            if(target_node == None):
+                break
         print(pathes)
         pass
         
