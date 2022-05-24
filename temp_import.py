@@ -37,6 +37,7 @@ class B_PLUS_TREE:
             pathes = []
             return_val = None
             while(1):
+                #print(start.keys)
                 if(start.isLeaf==True):#최종 리프 노드까지 오게 되면
                     pathes.append(start.keys)
                     return_val = start
@@ -49,7 +50,7 @@ class B_PLUS_TREE:
                     start = start.subTrees[-1]
                 else:#특정 key 보다 작거나 같거나 key+1인 것보다 큰 값 찾는 경우
                     for i in range(len(start.keys)-1):
-                        if(start.keys[i]>=k and start.keys[i+1]<k):
+                        if(start.keys[i]<=k and k<start.keys[i+1]):
                             pathes.append(start.keys)
                             start = start.subTrees[i+1]
                             break
@@ -87,10 +88,16 @@ class B_PLUS_TREE:
                         up_node_val = insert_place.keys[(len(insert_place.keys))//2]
                         n2.keys.sort()
                         insert_place.keys = insert_place.keys[:(len(insert_place.keys))//2]
-                        n2.subTrees = n2.subTrees+insert_place.subTrees[(len(insert_place.subTrees))//2+1:]
+                        if(self.order%2 == 0):
+                            n2.subTrees = n2.subTrees+insert_place.subTrees[(len(insert_place.subTrees))//2+1:]
+                        else:
+                            n2.subTrees = n2.subTrees+insert_place.subTrees[(len(insert_place.subTrees))//2:]
                         for i in n2.subTrees:
                             i.parent = n2
-                        insert_place.subTrees = insert_place.subTrees[:(len(insert_place.subTrees))//2+1]
+                        if(self.order%2==0):
+                            insert_place.subTrees = insert_place.subTrees[:(len(insert_place.subTrees))//2+1]
+                        else:
+                            insert_place.subTrees = insert_place.subTrees[:(len(insert_place.subTrees))//2]
                         for i in insert_place.subTrees:
                             i.parent = insert_place
                         n2.parent=insert_place.parent
