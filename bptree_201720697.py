@@ -1,4 +1,5 @@
 from logging import root
+from operator import is_
 import sys
 from tracemalloc import start
 
@@ -183,12 +184,20 @@ class B_PLUS_TREE:
                         left_back = delete_place.parent.subTrees[del_node_index-1].keys[-1]
                         left_back_val = delete_place.parent.subTrees[del_node_index-1].values[-1]
                         delete_place.parent.subTrees[del_node_index-1].keys.remove(delete_place.parent.subTrees[del_node_index-1].keys[-1])
+                        front_delete_place = delete_place.keys[0]
                         delete_place.keys.append(left_back)
                         delete_place.keys.sort()
+                        if(front_delete_place in delete_place.parent.keys):
+                            delete_place.parent.keys.remove(front_delete_place)
+                            delete_place.parent.keys.append(delete_place.keys[0])
+                            delete_place.parent.keys.sort()
                         if(delete_place.parent.subTrees[del_node_index-1].isLeaf):
                             delete_place.parent.subTrees[del_node_index-1].values.remove(delete_place.parent.subTrees[del_node_index-1].values[-1])
                             delete_place.values.append(left_back_val)
                             delete_place.values.sort()
+                        if(len(delete_place.parent.keys)+1-len(delete_place.parent.subTrees)<0):#위쪽이 언벨렌스하면 값 추가
+                            delete_place.parent.keys.append(delete_place.keys[0])
+                            delete_place.parent.keys.sort()
                     elif(len(delete_place.nextNode.keys)>(self.order)//2):#오른쪽에서 값 가져온다.
                         right_first = delete_place.nextNode.keys[0]
                         right_first_val = delete_place.nextNode.values[0]
@@ -200,27 +209,30 @@ class B_PLUS_TREE:
                             delete_place.values.append(right_first_val)
                             delete_place.nextNode.values.remove(right_first_val)
                             delete_place.values.sort()
-                        temp_renew_place = delete_place.nextNode.parent
-                        temp_k = right_first
-                        while(1):
-                            if(temp_renew_place==None):
-                                break
-                            if(temp_k in temp_renew_place.keys):#삭제한 요소가 부모 노드에 존재한다면 부모 노드에 최신화 시켜줘야댐
-                                #place = renew_place.keys.index(k)
-                                #renew_place.keys[k] = renew_place.subTrees[place+1]
-                                find_upder_temp_k = None
-                                temp_k_store = temp_k+1
-                                while(find_upder_temp_k == None):
-                                    find_upder_temp_k = self.find_node(temp_k_store)
-                                    temp_k_store+=1
-                                for i in range(1,len(temp_renew_place.subTrees)):
-                                    if(len(temp_renew_place.subTrees[i].keys)==0):
-                                        continue
-                                    #temp_renew_place.keys[i-1] = temp_renew_place.subTrees[i].keys[0]
-                                    temp_renew_place.keys[i-1] = delete_place.nextNode.keys[0]
-                                #if(temp_k in temp_renew_place.keys):
-                                #    temp_renew_place.keys.remove(temp_k)
-                            temp_renew_place = temp_renew_place.parent
+                        if(len(delete_place.parent.keys)+1-len(delete_place.parent.subTrees)<0):
+                            delete_place.parent.keys.append(delete_place.nextNode.keys[0])
+                            delete_place.parent.keys.sort()
+                        #temp_renew_place = delete_place.nextNode.parent
+                        #temp_k = right_first
+                        #while(1):
+                        #    if(temp_renew_place==None):
+                        #        break
+                        #    if(temp_k in temp_renew_place.keys):#삭제한 요소가 부모 노드에 존재한다면 부모 노드에 최신화 시켜줘야댐
+                        #        #place = renew_place.keys.index(k)
+                        #        #renew_place.keys[k] = renew_place.subTrees[place+1]
+                        #        find_upder_temp_k = None
+                        #        temp_k_store = temp_k+1
+                        #        while(find_upder_temp_k == None):
+                        #            find_upder_temp_k = self.find_node(temp_k_store)
+                        #            temp_k_store+=1
+                        #        for i in range(1,len(temp_renew_place.subTrees)):
+                        #            if(len(temp_renew_place.subTrees[i].keys)==0):
+                        #                continue
+                        #            #temp_renew_place.keys[i-1] = temp_renew_place.subTrees[i].keys[0]
+                        #            temp_renew_place.keys[i-1] = delete_place.nextNode.keys[0]
+                        #        #if(temp_k in temp_renew_place.keys):
+                        #        #    temp_renew_place.keys.remove(temp_k)
+                        #    temp_renew_place = temp_renew_place.parent
                         #if(delete_place!= self.root):
                         #    temp_balancing_place = delete_place.parent
                         #    while(1):
@@ -240,25 +252,25 @@ class B_PLUS_TREE:
                             temp_k = delete_place.keys[0]
                         delete_place.parent.subTrees[del_node_index-1].nextNode = delete_place.nextNode
                         delete_place.parent.subTrees.remove(delete_place)
-                        while(1):
-                            if(temp_renew_place==None):
-                                break
-                            if(temp_k in temp_renew_place.keys):#삭제한 요소가 부모 노드에 존재한다면 부모 노드에 최신화 시켜줘야댐
-                                #place = renew_place.keys.index(k)
-                                #renew_place.keys[k] = renew_place.subTrees[place+1]
-                                find_upder_temp_k = None
-                                temp_k_store = temp_k+1
-                                while(find_upder_temp_k == None):
-                                    find_upder_temp_k = self.find_node(temp_k_store)
-                                    temp_k_store+=1
-                                for i in range(1,len(temp_renew_place.subTrees)):
-                                    if(len(temp_renew_place.subTrees[i].keys)==0):
-                                        continue
-                                    #temp_renew_place.keys[i-1] = temp_renew_place.subTrees[i].keys[0]
-                                    temp_renew_place.keys[i-1] = delete_place.nextNode.keys[0]
-                                #if(temp_k in temp_renew_place.keys):
-                                #    temp_renew_place.keys.remove(temp_k)
-                            temp_renew_place = temp_renew_place.parent
+                        #while(1):
+                        #    if(temp_renew_place==None):
+                        #        break
+                        #    if(temp_k in temp_renew_place.keys):#삭제한 요소가 부모 노드에 존재한다면 부모 노드에 최신화 시켜줘야댐
+                        #        #place = renew_place.keys.index(k)
+                        #        #renew_place.keys[k] = renew_place.subTrees[place+1]
+                        #        find_upder_temp_k = None
+                        #        temp_k_store = temp_k+1
+                        #        while(find_upder_temp_k == None):
+                        #            find_upder_temp_k = self.find_node(temp_k_store)
+                        #            temp_k_store+=1
+                        #        for i in range(1,len(temp_renew_place.subTrees)):
+                        #            if(len(temp_renew_place.subTrees[i].keys)==0):
+                        #                continue
+                        #            #temp_renew_place.keys[i-1] = temp_renew_place.subTrees[i].keys[0]
+                        #            temp_renew_place.keys[i-1] = delete_place.nextNode.keys[0]
+                        #        #if(temp_k in temp_renew_place.keys):
+                        #        #    temp_renew_place.keys.remove(temp_k)
+                        #    temp_renew_place = temp_renew_place.parent
                         start_position = delete_place
                         while(1):
                             if(self.root==start_position):
@@ -266,11 +278,15 @@ class B_PLUS_TREE:
                             if(start_position.parent==None):
                                 break
                             if(start_position.isLeaf):#리프 단말일떄
-                                #밸런싱하려면 항상 subtree개수가 key개수+1해야한다.
-                                if(len(start_position.parent.subTrees)<=len(start_position.parent.keys)):#밸런싱하지 않다.
-                                    #index_place = start_position.parent.keys.index(start_position.keys[0])
-                                    start_position.parent.keys.remove(start_position.parent.subTrees[0].keys[0])
-                                start_position=start_position.parent
+                                if(len(start_position.keys)<(self.order//2)):#언벨런스 조건 검사
+                                    #밸런싱하려면 항상 subtree개수가 key개수+1해야한다.
+                                    if(len(start_position.parent.subTrees)<=len(start_position.parent.keys)):#밸런싱하지 않다.
+                                        #index_place = start_position.parent.keys.index(start_position.keys[0])
+                                        #start_position.parent.keys.remove(start_position.parent.subTrees[0].keys[0])
+                                        start_position.parent.keys.remove(start_position.keys[0])
+                                    start_position=start_position.parent
+                                else:
+                                    start_position = start_position.parent
                             else:
                                 if(len(start_position.keys)<(self.order//2)):#언벨런스 조건 검사
                                     parent_node = start_position.parent
@@ -321,6 +337,8 @@ class B_PLUS_TREE:
                                         if((0<delete_place_index)):#왼쪽에 노드가 있으면 왼쪽 검사하자.
                                             left_node = start_position.parent.subTrees[delete_place_index-1]
                                             parent_node = start_position.parent
+                                            #꽉 차있어서 parent끌고와서 머지해야할떄
+                                            #is_full = len(left_node.keys)+1-len(left_node.subTrees)+len(start_position.keys)+1-len(start_position.subTrees)
                                             if(len(start_position.keys)==0):
                                                 start_position.keys.append(parent_node.keys[delete_place_index-1])
                                                 parent_node.keys.remove(parent_node.keys[delete_place_index-1])
@@ -330,11 +348,18 @@ class B_PLUS_TREE:
                                             for i in left_node.subTrees:#서브트리들 parent도 최신화해줘야됨.
                                                 i.parent = left_node
                                             parent_node.subTrees.remove(start_position)
+                                            is_full = len(left_node.keys)-len(left_node.subTrees)+2
+                                            if(is_full == 0):
+                                                full_state_key = parent_node.keys[delete_place_index-1]
+                                                left_node.keys.append(full_state_key)
+                                                left_node.keys.sort()
+                                                parent_node.keys.remove(full_state_key)
                                             #if(parent_node.keys[delete_place_index-1] in start_position.keys):
                                             #    parent_node.keys[delete_place_index-1] = left_node
                                         else:
                                             right_node = start_position.parent.subTrees[delete_place_index+1]
                                             parent_node = start_position.parent
+                                            #is_full = len(right_node.keys)+1-len(right_node.subTrees)+len(start_position.keys)+1-len(start_position.subTrees)
                                             if(len(start_position.keys)==0):
                                                 start_position.keys.append(parent_node.keys[0])
                                                 parent_node.keys.remove(parent_node.keys[0])
@@ -344,6 +369,12 @@ class B_PLUS_TREE:
                                             for i in right_node.subTrees:#서브트리들 parent도 최신화해줘야됨.
                                                 i.parent = right_node
                                             parent_node.subTrees.remove(start_position)
+                                            is_full = len(right_node.keys)-len(right_node.subTrees)+2
+                                            if(is_full == 0):
+                                                full_state_key = parent_node.keys[delete_place_index]
+                                                right_node.keys.append(full_state_key)
+                                                right_node.keys.sort()
+                                                parent_node.keys.remove(full_state_key)
                                     start_position = start_position.parent
                                 else:
                                     start_position = start_position.parent
@@ -538,6 +569,7 @@ class B_PLUS_TREE:
                                     if((0<delete_place_index)):#왼쪽에 노드가 있으면 왼쪽 검사하자.
                                         left_node = start_position.parent.subTrees[delete_place_index-1]
                                         parent_node = start_position.parent
+                                        #is_full = len(left_node.keys)+1-len(left_node.subTrees)+len(start_position.keys)+1-len(start_position.subTrees)
                                         if(len(start_position.keys)==0):
                                             start_position.keys.append(parent_node.keys[delete_place_index-1])
                                             parent_node.keys.remove(parent_node.keys[delete_place_index-1])
@@ -547,11 +579,18 @@ class B_PLUS_TREE:
                                         for i in left_node.subTrees:#서브트리들 parent도 최신화해줘야됨.
                                             i.parent = left_node
                                         parent_node.subTrees.remove(start_position)
+                                        is_full = len(left_node.keys)-len(left_node.subTrees)+2
+                                        if(is_full == 0):
+                                            full_state_key = parent_node.keys[delete_place_index-1]
+                                            left_node.keys.append(full_state_key)
+                                            left_node.keys.sort()
+                                            parent_node.keys.remove(full_state_key)
                                         #if(parent_node.keys[delete_place_index-1] in start_position.keys):
                                         #    parent_node.keys[delete_place_index-1] = left_node
                                     else:
                                         right_node = start_position.parent.subTrees[delete_place_index+1]
                                         parent_node = start_position.parent
+                                        #is_full = len(right_node.keys)+1-len(right_node.subTrees)+len(start_position.keys)+1-len(start_position.subTrees)
                                         if(len(start_position.keys)==0):
                                             start_position.keys.append(parent_node.keys[0])
                                             parent_node.keys.remove(parent_node.keys[0])
@@ -561,7 +600,12 @@ class B_PLUS_TREE:
                                         for i in right_node.subTrees:#서브트리들 parent도 최신화해줘야됨.
                                             i.parent = right_node
                                         parent_node.subTrees.remove(start_position)
-
+                                        is_full = len(right_node.keys)-len(right_node.subTrees)+2
+                                        if(is_full == 0):
+                                            full_state_key = parent_node.keys[delete_place_index]
+                                            right_node.keys.append(full_state_key)
+                                            right_node.keys.sort()
+                                            parent_node.keys.remove(full_state_key)
                                 start_position = start_position.parent
                             else:
                                 start_position = start_position.parent
